@@ -108,7 +108,7 @@ public class SinglyLinkedList<E extends Comparable<E>> {
             return;
         }
 
-        // 1. Store nodes in their CURRENT linked-list order
+        // Store nodes in their CURRENT linked-list order
         List<Node<E>> original = new ArrayList<>();
 
         Node<E> current = head;
@@ -118,18 +118,14 @@ public class SinglyLinkedList<E extends Comparable<E>> {
             current = current.getNext();
         }
 
-        // 2. Make another list containing the same nodes,
-        //    but sort them according to their element values
+        // make sorted list 
         List<Node<E>> sorted = new ArrayList<>(original);
 
         sorted.sort((a, b)
                 -> a.getElement().compareTo(b.getElement())
         );
 
-        // 3. Create mapping:
-        // smallest <-> largest
-        // second smallest <-> second largest
-        // etc.
+        // map largest with smallest and second largest with second smallest...
         Map<Node<E>, Node<E>> swapMap = new HashMap<>();
 
         int n = sorted.size();
@@ -142,29 +138,27 @@ public class SinglyLinkedList<E extends Comparable<E>> {
             swapMap.put(high, low);
         }
 
-        // Odd number of nodes:
-        // middle-ranked node stays where it is
+        // odd number of nodes, middle-ranked node stays where it is
         if (n % 2 == 1) {
             Node<E> middle = sorted.get(n / 2);
             swapMap.put(middle, middle);
         }
 
-        // 4. Work out which node should occupy each original position
+        // using the swapMap, figure out new ordering of nodes
         List<Node<E>> newOrder = new ArrayList<>();
 
         for (Node<E> node : original) {
             newOrder.add(swapMap.get(node));
         }
 
-        // 5. Reconnect all the nodes
+        // using newOrder list to connect all the nodes in order
         for (int i = 0; i < n - 1; i++) {
             newOrder.get(i).setNext(newOrder.get(i + 1));
         }
 
-        // Last node must point to null
         newOrder.get(n - 1).setNext(null);
 
-        // 6. Update head and tail
+        // update head and tail
         head = newOrder.get(0);
         tail = newOrder.get(n - 1);
     }
